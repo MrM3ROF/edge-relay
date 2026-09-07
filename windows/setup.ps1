@@ -208,6 +208,21 @@ if ($null -ne $existingService) {
 if ($LASTEXITCODE -ne 0) {
     throw 'WireGuard tunnel service installation failed.'
 }
+
+# wireguard.exe can return just before the Service Control Manager exposes the
+# newly registered tunnel service. Wait for registration instead of treating
+# that short race as an installation failure.
+$tunnelService = $null
+for ($attempt = 0; $attempt -lt 40 -and $null -eq $tunnelService; $attempt++) {
+    $tunnelService = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
+    if ($null -eq $tunnelService) {
+        Start-Sleep -Milliseconds 250
+    }
+}
+if ($null -eq $tunnelService) {
+    throw "WireGuard did not register $serviceName within 10 seconds. Review the WireGuard diagnostic log."
+}
+
 Set-Service -Name $serviceName -StartupType Automatic
 Start-Service -Name $serviceName -ErrorAction SilentlyContinue
 
