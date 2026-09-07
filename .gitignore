@@ -1,0 +1,27 @@
+# Real local configuration
+config/relay.env
+config/services.conf
+.env
+.env.*
+!.env.example
+
+# Keys and credentials
+*.key
+*.pem
+*.p12
+*.pfx
+*.ppk
+*.conf.dpapi
+secrets/
+
+# Generated tunnel configurations
+windows/*.conf
+oracle/*.conf
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
